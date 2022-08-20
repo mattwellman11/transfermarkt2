@@ -16,6 +16,7 @@ from io import StringIO
 import smtplib
 
 
+
 args = [0,0,0,0]
 
 #Recieving input from user about what league/team/year to start the scraping on
@@ -95,97 +96,105 @@ def parse_player_table(tds, player_key, all_box, year, league_abr, game):
     record_year = str(year)
     ## remove space in front of the year
     ## if a name of the header is the same as the url name (ie GB1) then use this table)
-    correct_box = ""
     i = 0
-    for box in all_box.find_all("div", {"class": "box"})[1:]:
-        if box.find("a") and box.find("a")["name"] == league_abr:
-            correct_box = box
-    if correct_box == "":
-        print("Bad happening 1 with " + player_name)
-        return game
     if record_year in valid_years:
         if record_year not in player_dict[player_key]["stats"]:
-            game = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+            game = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    for box in all_box.find_all("div", {"class": "box"})[1:]:
+        competition = box.find("a").text
+        competition = competition[1:]
+        competition = competition.strip()
+        '''if record_year in valid_years:
+            if record_year not in player_dict[player_key]["stats"]:
+                game = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']'''
 
 
-    player_dict[player_key]["stats"] = {}
-    p_table = correct_box.find("div", {"class": "responsive-table"})
-    if p_table and p_table.find("tbody"):
-        p_terms = p_table.find("tbody").find_all("tr")
-        p_ct = len(p_terms)
-        for i in range(p_ct):
-            if i < p_ct:
-                tds = p_terms[i].find_all("td")
-                if len(tds) == 17:
-                    if tds[0].text != "-":
-                        game[0] = str(tds[0].text[:-1].replace("\\", "").replace("n", ""))
-                        game[0] = game[0][1:]
-                    if tds[1].text != "":
-                        game[1] = str(tds[1].text)
-                    if tds[3].text != "-":
-                        game[2] = str(tds[3].find("a")['title'])
-                    if tds[5].text != "-":
-                        game[3] = str(tds[5].find("a")['title'])
-                    if tds[6].text != "-":
-                        game[4] = str(tds[6].text)
-                    if tds[7].text != "-":
-                        game[5] = str(tds[7].text)
-                    if tds[8].text != "":
-                        game[6] = str(tds[8].text)
+        player_dict[player_key]["stats"] = {}
+        p_table = box.find("div", {"class": "responsive-table"})
+        if p_table and p_table.find("tbody"):
+            p_terms = p_table.find("tbody").find_all("tr")
+            p_ct = len(p_terms)
+            for i in range(p_ct):
+                if i < p_ct:
+                    tds = p_terms[i].find_all("td")
+                    if len(tds) == 17:
+                        if tds[0].text != "-":
+                            game[0] = str(tds[0].text[:-1].replace("\\", ""))
+                            game[0] = game[0][1:]
+                        if tds[1].text != "":
+                            game[1] = str(tds[1].text)
+                        if tds[3].text != "-":
+                            game[2] = str(tds[3].find("a")['title'])
+                        if tds[5].text != "-":
+                            game[3] = str(tds[5].find("a")['title'])
+                        if tds[6].text != "-":
+                            game[4] = str(tds[6].text)
+                        if tds[7].text != "-":
+                            game[5] = str(tds[7].text)
+                        if tds[8].text != "":
+                            game[6] = str(tds[8].text)
+                        else:
+                            game[6] = str("0")
+                        if tds[9].text != "":
+                            game[7] = str(tds[9].text)
+                        else:
+                            game[7] = str("0")
+                        if tds[10].text != "":
+                            game[8] = str(tds[10].text)
+                        else:
+                            game[8] = str("0")
+                        if tds[11].text != "":
+                            game[9] = str(tds[11].text)
+                        else:
+                            game[9] = str("X")
+                        if tds[12].text != "":
+                            game[10] = str(tds[12].text)
+                        else:
+                            game[10] = str("X")
+                        if tds[13].text != "":
+                            game[11] = str(tds[13].text)
+                        else:
+                            game[11] = str("X")
+                        if tds[14].text != "":
+                            game[12] = str(tds[14].text)
+                        else:
+                            game[12] = str("")
+                        if tds[15].text != "":
+                            game[13] = str(tds[15].text)
+                        else:
+                            game[13] = str("")
+                        if tds[16].text != "":
+                            game[14] = str(tds[16].text)
+                        else:
+                            game[14] = str("")
+                        game[15] = competition
+                        game.append(game[:])
+                    if len(tds) == 8: 
+                        if tds[0].text != "-":
+                            game[0] = str(tds[0].text[:-1].replace("\\", ""))
+                            game[0] = game[0][1:]
+                        if tds[1].text != "-":
+                            game[1] = str(tds[1].text)
+                        if tds[3].text != "-":
+                            game[2] = str(tds[3].find("a")['title'])
+                        if tds[5].text != "-":
+                            game[3] = str(tds[5].find("a")['title'])
+                        if tds[6].text != "-":
+                            game[4] = str(tds[6].text)
+                        game[5] = ''
+                        game[6] = str("Did not play")
+                        game[7] = ''
+                        game[8] = ''
+                        game[9] = ''
+                        game[10] = ''
+                        game[11] = ''
+                        game[12] = ''
+                        game[13] = ''
+                        game[14] = ''
+                        game[15] = competition
+                        game.append(game[:])
                     else:
-                        game[6] = str("0")
-                    if tds[9].text != "":
-                        game[7] = str(tds[9].text)
-                    else:
-                        game[7] = str("0")
-                    if tds[10].text != "":
-                        game[8] = str(tds[10].text)
-                    else:
-                        game[8] = str("0")
-                    if tds[11].text != "":
-                        game[9] = str(tds[11].text)
-                    else:
-                        game[9] = str("X")
-                    if tds[12].text != "":
-                        game[10] = str(tds[12].text)
-                    else:
-                        game[10] = str("X")
-                    if tds[13].text != "":
-                        game[11] = str(tds[13].text)
-                    else:
-                        game[11] = str("X")
-                    if tds[14].text != "":
-                        game[12] = str(tds[14].text)
-                    if tds[15].text != "":
-                        game[13] = str(tds[15].text)
-                    if tds[16].text != "":
-                        game[14] = str(tds[16].text)
-                    game.append(game[:])
-                if len(tds) == 8: 
-                    if tds[0].text != "-":
-                        game[0] = str(tds[0].text[:-1].replace("\\", "").replace("n", ""))
-                        game[0] = game[0][1:]
-                    if tds[1].text != "-":
-                        game[1] = str(tds[1].text)
-                    if tds[3].text != "-":
-                        game[2] = str(tds[3].find("a")['title'])
-                    if tds[5].text != "-":
-                        game[3] = str(tds[5].find("a")['title'])
-                    if tds[6].text != "-":
-                        game[4] = str(tds[6].text)
-                    game[5] = ''
-                    game[6] = str("Did not play")
-                    game[7] = ''
-                    game[8] = ''
-                    game[9] = ''
-                    game[10] = ''
-                    game[11] = ''
-                    game[12] = ''
-                    game[13] = ''
-                    game[14] = ''
-                    game.append(game[:])
-                else:
-                    continue
+                        continue
 
     return game 
                   
@@ -219,8 +228,8 @@ try:
     for leagueidx, leagueurl in enumerate(urlList):
 
         print("Starting league", leagueurl)
-        #if first_time and leagueidx != league_offset:
-            #continue
+        if first_time and leagueidx != league_offset:
+            continue
         league_offset = leagueidx
         league_abr = leagueurl.split('/')[6]
         print(league_abr)
@@ -321,19 +330,19 @@ try:
                                 pnames.append(player_name)
                 
                         
-                        '''val_td = even[i].find("td", {"class": "rechts hauptlink"})
-                        if val_td.text.strip() != "" and val_td.text.strip() != "-":
-                            val = format_value(val_td.text.strip())'''
-                        
                     
-                        field_names = ["PID", "Player Name", "Team Name", "League Name", "Year", "Position", 
+                        field_names = ["PID", "Player Name", "Team Name", "Competition", "Year", "Position", 
                         "Matchday", "Date", "Home Team", "Away Team", "Result", "Goals", "Assists", "Own Goals", "Yellow Cards", "Second Yellow", "Red Cards", "Subbed on", "Subbed off", "Minutes Played"]
-                        with open("game_data_fall_2021_brit.csv", 'a') as out_file:
+                        with open("game_data_fall_2022_7.csv", 'a') as out_file:
                             writer = csv.DictWriter(out_file, fieldnames=field_names)
-                            i = 15
+                            i = 16
+                            if player_name == "Petr Cech" and i == 16 and year == 2004:
+                                out_dict = {"PID": "Player ID", "Player Name": "Player's name", "Team Name": "Team Name", "Competition": "Competition", "Year": "Year", "Position": "Position Played",
+                                    "Matchday": "Match Week", "Date": "Date", "Home Team": "Home Team", "Away Team": "Away", "Result": "Result", "Goals": "Goals", "Assists": "Assists", "Own Goals": "Own Goals", "Yellow Cards": "Yellow Cards", "Second Yellow": "Second Yellow", "Red Cards": "Red Cards", "Subbed on": "Subbed On", "Subbed off": "Subbed Off", "Minutes Played": "Minutes Played"}
+                                writer.writerow(out_dict) 
                             for pidx in range(len(game)):
                                 if i < len(game):
-                                    out_dict = {"PID": player_id, "Player Name": player_name, "Team Name": teamName, "League Name": leagueName, "Year": year, "Position": game[i][5],
+                                    out_dict = {"PID": player_id, "Player Name": player_name, "Team Name": teamName, "Competition": game[i][15], "Year": year, "Position": game[i][5],
                                     "Matchday": game[i][0], "Date": game[i][1], "Home Team": game[i][2], "Away Team": game[i][3], "Result": game[i][4], "Goals": game[i][6], "Assists": game[i][7], "Own Goals": game[i][8], "Yellow Cards": game[i][9], "Second Yellow": game[i][10], "Red Cards": game[i][11], "Subbed on": game[i][12], "Subbed off": game[i][13], "Minutes Played": game[i][14]}
                                     i += 1
                                     
